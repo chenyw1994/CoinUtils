@@ -1,15 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.5)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-# option() honors normal variables.
-if(POLICY CMP0077)
-  cmake_policy(SET CMP0077 NEW)
-endif()
-
-# MSVC runtime library flags are selected by an abstraction.
-if(POLICY CMP0091)
-  cmake_policy(SET CMP0091 NEW)
-endif()
 
 include(ParseAc)
 parse_ac(VERSION MAJOR MINOR PATCH)
@@ -55,11 +45,8 @@ if(APPLE)
 endif(APPLE)
 
 # ZLIB
-if(NOT TARGET ZLIB::ZLIB)
-  find_package(ZLIB)
-endif()
-if(ZLIB_FOUND OR TARGET ZLIB::ZLIB)
-  message(STATUS "Use zlib")
+find_package(ZLIB)
+if(ZLIB_FOUND)
   set(HAVE_ZLIB_H "1" CACHE INTERNAL "Use zlib")
   set(COIN_HAS_ZLIB "1" CACHE INTERNAL "Use zlib")
 endif()
@@ -76,7 +63,7 @@ endif()
 include(CheckEnv)
 include(CTest)
 
-add_subdirectory(CoinUtils)
+add_subdirectory(src)
 
 include(GNUInstallDirs)
 install(EXPORT ${PROJECT_NAME}Targets
