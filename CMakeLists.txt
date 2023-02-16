@@ -1,169 +1,97 @@
-set(NAME "COINUTILS")
+cmake_minimum_required(VERSION 3.15)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# PTHREAD
-if(PTHREADS_FOUND)
-  set(${NAME}_PTHREADS "1" CACHE INTERNAL "Use pthread")
+# option() honors normal variables.
+if(POLICY CMP0077)
+  cmake_policy(SET CMP0077 NEW)
 endif()
 
-set(COIN_${NAME}_CHECKLEVEL "0" CACHE INTERNAL
-  "${NAME} check level")
-set(COIN_${NAME}_VERBOSITY "0" CACHE INTERNAL
-  "${NAME} verbosity level")
-configure_file(config.h.cmake.in config.h)
-configure_file(config_coinutils.h.cmake.in config_coinutils.h)
-
-set(_SRCS
-  src/CoinAlloc.cpp
-  src/CoinBuild.cpp
-  src/CoinDenseVector.cpp
-  src/CoinError.cpp
-  src/CoinFactorization1.cpp
-  src/CoinFactorization2.cpp
-  src/CoinFactorization3.cpp
-  src/CoinFactorization4.cpp
-  src/CoinSimpFactorization.cpp
-  src/CoinDenseFactorization.cpp
-  src/CoinOslFactorization.cpp
-  src/CoinOslFactorization2.cpp
-  src/CoinOslFactorization3.cpp
-  src/CoinFileIO.cpp
-  src/CoinFinite.cpp
-  src/CoinIndexedVector.cpp
-  src/CoinLpIO.cpp
-  src/CoinMessage.cpp
-  src/CoinMessageHandler.cpp
-  src/CoinModel.cpp
-  src/CoinStructuredModel.cpp
-  src/CoinModelUseful.cpp
-  src/CoinModelUseful2.cpp
-  src/CoinMpsIO.cpp
-  src/CoinPackedMatrix.cpp
-  src/CoinPackedVector.cpp
-  src/CoinPackedVectorBase.cpp
-  src/CoinParam.cpp
-  src/CoinParamUtils.cpp
-  src/CoinPostsolveMatrix.cpp
-  src/CoinPrePostsolveMatrix.cpp
-  src/CoinPresolveDoubleton.cpp
-  src/CoinPresolveDual.cpp
-  src/CoinPresolveDupcol.cpp
-  src/CoinPresolveEmpty.cpp
-  src/CoinPresolveFixed.cpp
-  src/CoinPresolveForcing.cpp
-  src/CoinPresolveHelperFunctions.cpp
-  src/CoinPresolveImpliedFree.cpp
-  src/CoinPresolveIsolated.cpp
-  src/CoinPresolveMatrix.cpp
-  src/CoinPresolvePsdebug.cpp
-  src/CoinPresolveMonitor.cpp
-  src/CoinPresolveSingleton.cpp
-  src/CoinPresolveSubst.cpp
-  src/CoinPresolveTighten.cpp
-  src/CoinPresolveTripleton.cpp
-  src/CoinPresolveUseless.cpp
-  src/CoinPresolveZeros.cpp
-  src/CoinSearchTree.cpp
-  src/CoinShallowPackedVector.cpp
-  src/CoinSnapshot.cpp
-  src/CoinWarmStartBasis.cpp
-  src/CoinWarmStartVector.cpp
-  src/CoinWarmStartDual.cpp
-  src/CoinWarmStartPrimalDual.cpp
-  src/CoinRational.cpp)
-
-set(_HDRS
-  src/Coin_C_defines.h
-  src/CoinUtilsConfig.h
-  src/CoinAlloc.hpp
-  src/CoinBuild.hpp
-  src/CoinDenseVector.hpp
-  src/CoinDistance.hpp
-  src/CoinError.hpp
-  src/CoinFactorization.hpp
-  src/CoinSimpFactorization.hpp
-  src/CoinDenseFactorization.hpp
-  src/CoinOslFactorization.hpp
-  src/CoinFileIO.hpp
-  src/CoinFinite.hpp
-  src/CoinFloatEqual.hpp
-  src/CoinHelperFunctions.hpp
-  src/CoinIndexedVector.hpp
-  src/CoinLpIO.hpp
-  src/CoinMessage.hpp
-  src/CoinMessageHandler.hpp
-  src/CoinModel.hpp
-  src/CoinStructuredModel.hpp
-  src/CoinModelUseful.hpp
-  src/CoinMpsIO.hpp
-  src/CoinPackedMatrix.hpp
-  src/CoinPackedVector.hpp
-  src/CoinPackedVectorBase.hpp
-  src/CoinParam.hpp
-  src/CoinPragma.hpp
-  src/CoinPresolveDoubleton.hpp
-  src/CoinPresolveDual.hpp
-  src/CoinPresolveDupcol.hpp
-  src/CoinPresolveEmpty.hpp
-  src/CoinPresolveFixed.hpp
-  src/CoinPresolveForcing.hpp
-  src/CoinPresolveImpliedFree.hpp
-  src/CoinPresolveIsolated.hpp
-  src/CoinPresolveMatrix.hpp
-  src/CoinPresolveMonitor.hpp
-  src/CoinPresolvePsdebug.hpp
-  src/CoinPresolveSingleton.hpp
-  src/CoinPresolveSubst.hpp
-  src/CoinPresolveTighten.hpp
-  src/CoinPresolveTripleton.hpp
-  src/CoinPresolveUseless.hpp
-  src/CoinPresolveZeros.hpp
-  src/CoinSearchTree.hpp
-  src/CoinShallowPackedVector.hpp
-  src/CoinSignal.hpp
-  src/CoinSmartPtr.hpp
-  src/CoinSnapshot.hpp
-  src/CoinSort.hpp
-  src/CoinTime.hpp
-  src/CoinTypes.hpp
-  src/CoinUtility.hpp
-  src/CoinWarmStart.hpp
-  src/CoinWarmStartBasis.hpp
-  src/CoinWarmStartVector.hpp
-  src/CoinWarmStartDual.hpp
-  src/CoinWarmStartPrimalDual.hpp
-  src/CoinRational.hpp)
-
-add_library(CoinUtils ${_SRCS} ${_HDRS})
-target_include_directories(CoinUtils PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-  $<INSTALL_INTERFACE:include/coin>)
-target_compile_definitions(CoinUtils
-  PUBLIC HAVE_CONFIG_H
-  PRIVATE COINUTILS_BUILD)
-if(CMAKE_VERSION VERSION_LESS "3.8.2")
-  set_property(TARGET CoinUtils PROPERTY CXX_STANDARD 11)
-  set_property(TARGET CoinUtils PROPERTY CXX_STANDARD_REQUIRED ON)
-else()
-  target_compile_features(CoinUtils PUBLIC cxx_std_11)
+# MSVC runtime library flags are selected by an abstraction.
+if(POLICY CMP0091)
+  cmake_policy(SET CMP0091 NEW)
 endif()
-if(TARGET ZLIB::ZLIB)
-  target_link_libraries(CoinUtils PRIVATE	ZLIB::ZLIB)
+
+include(ParseAc)
+parse_ac(VERSION MAJOR MINOR PATCH)
+
+project(CoinUtils VERSION ${VERSION})
+
+# config options
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+    "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel."
+    FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
+
+option(BUILD_SHARED_LIBS "" ON)
+if(BUILD_SHARED_LIBS AND MSVC)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif(BUILD_SHARED_LIBS AND MSVC)
+
+# config options
+if(MSVC)
+  # Build with multiple processes
+  add_definitions(/MP)
+  add_definitions(/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE)
+  # MSVC warning suppressions
+  add_definitions(
+    /wd4018 # 'expression' : signed/unsigned mismatch
+    /wd4065 # switch statement contains 'default' but no 'case' labels
+    /wd4101 # 'identifier' : unreferenced local variable
+    /wd4102 # 'label' : unreferenced label
+    /wd4244 # 'conversion' conversion from 'type1' to 'type2', possible loss of data
+    /wd4267 # 'var' : conversion from 'size_t' to 'type', possible loss of data
+    /wd4309 # 'conversion' : truncation of constant value
+    /wd4805 # 'operation' : unsafe mix of type 'type1' and type 'type2' in operation.
+    /wd4996 # The compiler encountered a deprecated declaration.
+    )
 endif()
+if(APPLE)
+  set(
+    CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -Wno-inconsistent-missing-override -Wno-unused-command-line-argument -Wno-unused-result -Wno-exceptions"
+    )
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment version")
+endif(APPLE)
+
+# ZLIB
+if(NOT TARGET ZLIB::ZLIB)
+  find_package(ZLIB)
+endif()
+if(ZLIB_FOUND OR TARGET ZLIB::ZLIB)
+  message(STATUS "Use zlib")
+  set(HAVE_ZLIB_H "1" CACHE INTERNAL "Use zlib")
+  set(COIN_HAS_ZLIB "1" CACHE INTERNAL "Use zlib")
+endif()
+
+# PThread
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads)
 if(CMAKE_USE_PTHREADS_INIT)
-  target_link_libraries(CoinUtils PRIVATE	Threads::Threads)
+  set(PTHREADS_FOUND TRUE)
+else()
+  set(PTHREADS_FOUND FALSE)
 endif()
-set_target_properties(CoinUtils PROPERTIES
-  PUBLIC_HEADER "${_HDRS};${CMAKE_CURRENT_BINARY_DIR}/config_coinutils.h"
-  VERSION ${PROJECT_VERSION}
-  SOVERSION ${PROJECT_VERSION_MAJOR})
-add_library(Coin::CoinUtils ALIAS CoinUtils)
 
-# Install
+include(CheckEnv)
+include(CTest)
+
+add_subdirectory(CoinUtils)
+
 include(GNUInstallDirs)
-install(TARGETS CoinUtils
-  EXPORT ${PROJECT_NAME}Targets
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/coin
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  )
+install(EXPORT ${PROJECT_NAME}Targets
+  NAMESPACE Coin::
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+include(CMakePackageConfigHelpers)
+configure_package_config_file(cmake/Config.cmake.in
+  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+write_basic_package_version_file(
+  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  COMPATIBILITY SameMajorVersion)
+install(
+  FILES
+  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+  COMPONENT Devel)
