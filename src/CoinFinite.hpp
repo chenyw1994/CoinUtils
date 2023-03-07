@@ -15,7 +15,7 @@
 
 #if 1
 const double COIN_DBL_MIN = (std::numeric_limits< double >::min)();
-const double COIN_DBL_MAX = (std::numeric_limits< double >::max)();
+const double COIN_DBL_MAX = (std::numeric_limits< double >::infinity)();
 const int COIN_INT_MAX = (std::numeric_limits< int >::max)();
 const double COIN_INT_MAX_AS_DOUBLE = (std::numeric_limits< int >::max)();
 #else
